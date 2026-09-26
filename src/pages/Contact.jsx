@@ -7,36 +7,78 @@ export default function Contact() {
   const handleSubmit = (e) => {
     e.preventDefault()
     setSubmitted(true)
-    e.target.reset()
   }
 
-  const focusInput = () => {
+  const focusNameInput = () => {
     nameInputRef.current?.focus()
   }
 
   return (
-    <section className="page contact-grid">
-      <div>
-        <h2>Contact Us</h2>
-        <p className="page-desc">Got a question or hosting a corporate sports league?</p>
-        <div className="contact-info">
-          <p>📞 +91 98201 44521</p>
-          <p>✉️ support@sportsturf.in</p>
-          <p>📍 Thane West, Maharashtra</p>
-        </div>
-        <button type="button" className="btn btn-secondary" onClick={focusInput} style={{ marginTop: '15px' }}>
-          Focus Name Field (useRef)
-        </button>
+    <div className="contact-wrapper">
+      <div className="banner-header">
+        <h1>Contact Us</h1>
+        <p>Have questions or looking to host a tournament? Reach out to us.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="form-layout card">
-        <input ref={nameInputRef} type="text" placeholder="Your Name" required />
-        <input type="email" placeholder="Your Email" required />
-        <input type="text" placeholder="Phone Number" required />
-        <textarea rows="4" placeholder="Your Message" required></textarea>
-        <button type="submit" className="btn btn-primary">Send Message</button>
-        {submitted && <p className="success-text">Message sent successfully!</p>}
-      </form>
-    </section>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        {/* Top: Send a Message Card */}
+        <div className="contact-form-card">
+          <h3>Send a Message</h3>
+          {submitted ? (
+            <div className="success-note" style={{ marginTop: '16px' }}>
+              Thank you! Your message has been received.
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="contact-form">
+              <label>Full Name</label>
+              <input 
+                ref={nameInputRef} 
+                type="text" 
+                placeholder="Enter your name" 
+                required 
+              />
+
+              <label>Email Address</label>
+              <input 
+                type="email" 
+                placeholder="Enter your email" 
+                required 
+              />
+
+              <label>Phone Number</label>
+              <input 
+                type="tel" 
+                placeholder="Enter 10-digit number" 
+                required 
+              />
+
+              <label>Your Message</label>
+              <textarea 
+                rows="4" 
+                placeholder="Type your match or arena query..." 
+                required
+              ></textarea>
+
+              <button type="submit" className="btn-green" style={{ marginTop: '8px' }}>
+                Send Message
+              </button>
+            </form>
+          )}
+        </div>
+
+        {/* Bottom: Get In Touch Card */}
+        <div className="contact-info-card">
+          <h3>Get In Touch</h3>
+          <p className="contact-subtext">Direct coordinates for ground inquiries and support:</p>
+          
+          <div className="contact-details">
+            <p><strong>📞 Phone:</strong> +91 98201 44521</p>
+            <p><strong>✉️ Email:</strong> support@sportsturf.in</p>
+            <p><strong>📍 Location:</strong> Thane West, Maharashtra</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
   )
 }

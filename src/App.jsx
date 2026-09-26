@@ -5,7 +5,7 @@ import Footer from './components/Footer'
 import Home from './pages/Home'
 import About from './pages/About'
 import Turfs from './pages/Turfs'
-import Services from './pages/Services'
+import Booking from './pages/Booking'
 import Contact from './pages/Contact'
 import './App.css'
 
@@ -16,9 +16,9 @@ export default function App() {
       <main className="content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
           <Route path="/turfs" element={<Turfs />} />
-          <Route path="/services" element={<Services />} />
+          <Route path="/booking" element={<Booking />} />
+          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
