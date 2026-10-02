@@ -8,6 +8,9 @@ export default function Booking() {
 
   const [booked, setBooked] = useState(false)
   const [bookingId, setBookingId] = useState('')
+  const [serverError, setServerError] = useState('')
+  const [loading, setLoading] = useState(false)
+
   const [hours, setHours] = useState(1)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -28,12 +31,39 @@ export default function Booking() {
 
   const totalAmount = turf.price * hours
 
-  const handleBooking = (e) => {
+  const handleBooking = async (e) => {
     e.preventDefault()
-    // Generate simple random booking receipt ID (e.g., ST-4821)
-    const randomId = 'ST-' + Math.floor(1000 + Math.random() * 9000)
-    setBookingId(randomId)
-    setBooked(true)
+    setServerError('')
+    setLoading(true)
+
+    try {
+      const response = await fetch('http://localhost:5000/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          turf_id: turf.id,
+          customer_name: name,
+          phone: phone,
+          booking_date: date,
+          time_slot: slot,
+          hours: hours,
+          total_amount: totalAmount
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Booking failed')
+      }
+
+      setBookingId(data.bookingId)
+      setBooked(true)
+    } catch (err) {
+      setServerError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -47,13 +77,12 @@ export default function Booking() {
         {booked ? (
           <div>
             <div className="success-note" style={{ marginBottom: '18px' }}>
-              ✓ Reservation Confirmed!
+              ✓ Reservation Saved to Database!
             </div>
             
             <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '20px' }}>
               <p style={{ marginBottom: '8px' }}><strong>Booking ID:</strong> <span style={{ color: '#166534', fontWeight: 'bold' }}>{bookingId}</span></p>
               <p style={{ marginBottom: '8px' }}><strong>Arena:</strong> {turf.name}</p>
-              <p style={{ marginBottom: '8px' }}><strong>Location:</strong> {turf.location}</p>
               <p style={{ marginBottom: '8px' }}><strong>Customer Name:</strong> {name}</p>
               <p style={{ marginBottom: '8px' }}><strong>Contact:</strong> {phone}</p>
               <p style={{ marginBottom: '8px' }}><strong>Date & Slot:</strong> {date} ({slot})</p>
@@ -81,6 +110,12 @@ export default function Booking() {
                 Total: ₹{totalAmount} <span>({hours} hr @ ₹{turf.price}/hr)</span>
               </p>
             </div>
+
+            {serverError && (
+              <div style={{ background: '#fee2e2', color: '#991b1b', padding: '10px 14px', borderRadius: '6px', marginBottom: '16px', fontSize: '0.9rem' }}>
+                {serverError}
+              </div>
+            )}
 
             <form className="booking-form" onSubmit={handleBooking}>
               <label>Full Name</label>
@@ -127,8 +162,8 @@ export default function Booking() {
               </select>
 
               <div className="modal-actions" style={{ marginTop: '16px' }}>
-                <button type="submit" className="btn-green" style={{ flex: 1 }}>
-                  Confirm Booking
+                <button type="submit" className="btn-green" style={{ flex: 1 }} disabled={loading}>
+                  {loading ? 'Saving...' : 'Confirm Booking'}
                 </button>
                 <button type="button" className="btn-secondary" onClick={() => navigate('/turfs')}>
                   Cancel
